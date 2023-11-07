@@ -25,14 +25,44 @@ func GetAllUser(db *sql.DB) ([]*entity.User, error) {
 	return users, nil
 }
 
+func GetOneUser(db *sql.DB, id string) (*entity.User, error) {
+	stmp, err := db.Prepare("SELECT id,name,email,password FROM user WHERE id=?")
+	if err != nil {
+		return nil, err
+	}
+	var p entity.User
+	stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Email, &p.Password)
+	defer stmp.Close()
+	return &p, nil
+}
+
 func InsertUser(db *sql.DB, u *entity.User) (bool, error) {
-	stmp, err := db.Prepare("INSERT INTO user(id,name,email,password) VALUES(?,?,?,?)")
+	stmp, err := db.Prepare("INSERT INTO user(id,name,email,password,created_at) VALUES(?,?,?,?,?)")
 	if err != nil {
 		return false, err
 	}
-	stmp.Exec(u.ID, u.Name, u.Email, u.Password)
+	stmp.Exec(u.ID, u.Name, u.Email, u.Password, u.CreatedAt)
 
 	defer stmp.Close()
 
 	return true, nil
+}
+func UpdateUser(db *sql.DB, p *entity.User) error {
+	stmp, err := db.Prepare("UPDATE user SET name=?,email=? WHERE id=?")
+	if err != nil {
+		return err
+	}
+	stmp.Exec(p.Name, p.Email, p.ID)
+	defer stmp.Close()
+	return nil
+}
+
+func DeleteUser(db *sql.DB, p *entity.User) error {
+	stmp, err := db.Prepare("DELETE FROM user WHERE id=?")
+	if err != nil {
+		return err
+	}
+	stmp.Exec(p.ID)
+	defer stmp.Close()
+	return nil
 }

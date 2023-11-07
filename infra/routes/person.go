@@ -1,8 +1,6 @@
 package routes
 
 import (
-	"encoding/json"
-	"fmt"
 	"github.com/gabrielmoura/estudo-api-go/infra/db"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -11,11 +9,10 @@ import (
 func getAllPerson(c *gin.Context) {
 	person, err := db.GetAllPerson(db.Con)
 	if err != nil {
-		fmt.Fprint(c.Writer, "Erro: "+err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"erro": err.Error()})
 		return
 	}
-	json.NewEncoder(c.Writer).Encode(person)
-
+	c.JSON(http.StatusOK, person)
 }
 
 func getOnePerson(c *gin.Context) {

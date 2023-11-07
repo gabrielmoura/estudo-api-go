@@ -1,17 +1,26 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/gabrielmoura/estudo-api-go/pkg/argon"
 	"github.com/google/uuid"
-	"time"
+	"gopkg.in/validator.v2"
 )
 
 type User struct {
 	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
+	Name      string    `json:"name" validate:"min=3"`
+	Email     string    `json:"email" validate:"regexp=^[0-9a-z]+@[0-9a-z]+(\\.[0-9a-z]+)+$"`
 	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+func (u User) Validate() error {
+	if err := validator.Validate(u); err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewUser(name, email, password string) (*User, error) {
@@ -27,6 +36,7 @@ func NewUser(name, email, password string) (*User, error) {
 		CreatedAt: time.Now(),
 	}, nil
 }
+
 func (u *User) ValidatePassword(password string) bool {
 	ok, err := argon.ComparePasswordAndHash(password, u.Password)
 	if err != nil {

@@ -32,6 +32,11 @@ func postUser(c *gin.Context) {
 			"error": err.Error()})
 		return
 	}
+	if err := reqUser.Validate(); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error()})
+		return
+	}
 	user, _ := entity.NewUser(reqUser.Name, reqUser.Email, reqUser.Password)
 	_, err := db.InsertUser(db.Con, user)
 

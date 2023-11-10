@@ -2,26 +2,39 @@ package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
+
+	"github.com/gabrielmoura/estudo-api-go/infra/logger"
+	"github.com/gabrielmoura/estudo-api-go/infra/middleware"
+	"github.com/gin-gonic/gin"
 )
 
 func HandleRequest(addr string) {
-	r := gin.Default()
+	r := gin.New()
+
+	r.Use(middleware.GinLogger(logger.Logger), gin.Recovery())
+
+	r.Use(middleware.CORSMiddleware())
 
 	r.GET("/", func(c *gin.Context) {
 		fmt.Fprint(c.Writer, "Bem Vindo")
 	})
+	/** Rotas de Autenticação **/
+	r.POST("/login", LoginHandler)
+
+	auth := r.Group("")
+	auth.Use(middleware.JwtAuthMiddleware())
+
 	/** Rotas de Usuário **/
-	r.GET("/user", getAllUser)
-	r.GET("/user/:id", getOneUser)
-	r.PUT("/user/:id", updateUser)
-	r.POST("/user", postUser)
-	r.DELETE("/user", deleteUser)
+	auth.GET("/user", getAllUser)
+	auth.GET("/user/:id", getOneUser)
+	auth.PUT("/user/:id", updateUser)
+	auth.POST("/user", postUser)
+	auth.DELETE("/user", deleteUser)
 
 	/** Rotas de Pessoa **/
-	r.GET("/person", getAllPerson)
-	r.GET("/person/:id", getOnePerson)
+	auth.GET("/person", getAllPerson)
+	auth.GET("/person/:id", getOnePerson)
 
 	log.Fatal(r.Run(addr))
 }

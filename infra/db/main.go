@@ -3,8 +3,9 @@ package db
 import (
 	"database/sql"
 	"errors"
-	_ "github.com/glebarez/go-sqlite"
 	"log"
+
+	_ "github.com/glebarez/go-sqlite"
 )
 
 var (
@@ -17,5 +18,6 @@ func Conn(driverName, dataSource string) *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+	Con = db
 	return db
 }

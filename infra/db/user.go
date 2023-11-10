@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+
 	"github.com/gabrielmoura/estudo-api-go/internal/entity"
 )
 
@@ -32,6 +33,17 @@ func GetOneUser(db *sql.DB, id string) (*entity.User, error) {
 	}
 	var p entity.User
 	stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Email, &p.Password)
+	defer stmp.Close()
+	return &p, nil
+}
+
+func GetOneUserByEmail(db *sql.DB, email string) (*entity.User, error) {
+	stmp, err := db.Prepare("SELECT id,name,email,password FROM user WHERE email=?")
+	if err != nil {
+		return nil, err
+	}
+	var p entity.User
+	stmp.QueryRow(email).Scan(&p.ID, &p.Name, &p.Email, &p.Password)
 	defer stmp.Close()
 	return &p, nil
 }

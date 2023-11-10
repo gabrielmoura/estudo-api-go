@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"github.com/go-chi/jwtauth"
 	"github.com/spf13/viper"
 )
 
@@ -13,10 +12,12 @@ type conf struct {
 	//DBPassword    string `mapstructure:"DB_PASSWORD"`
 	DBName        string `mapstructure:"DB_NAME"`
 	WebServerPort int    `mapstructure:"WEB_SERVER_PORT"`
-	JWTSecret     string `mapstructure:"JWT_SECRET"`
+	JWTSecret     string `mapstructure:"JWT_SECRET" `
 	JwtExperesIn  int    `mapstructure:"JWT_EXPIRESIN"`
-	TokenAuth     *jwtauth.JWTAuth
+	AppName       string `mapstructure:"APP_NAME"`
 }
+
+var Conf *conf
 
 func LoadConfig(path string) (*conf, error) {
 	var cfg *conf
@@ -33,6 +34,11 @@ func LoadConfig(path string) (*conf, error) {
 	if err != nil {
 		panic(err)
 	}
-	cfg.TokenAuth = jwtauth.New("HS256", []byte(cfg.JWTSecret), nil)
+
+	if cfg.AppName == "" {
+		cfg.AppName = "EstudoGo"
+	}
+
+	Conf = cfg
 	return cfg, err
 }

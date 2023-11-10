@@ -15,6 +15,7 @@ type conf struct {
 	JWTSecret     string `mapstructure:"JWT_SECRET" `
 	JwtExperesIn  int    `mapstructure:"JWT_EXPIRESIN"`
 	AppName       string `mapstructure:"APP_NAME"`
+	AppEnv        string `mapstructure:"APP_ENV"`
 }
 
 var Conf *conf
@@ -37,6 +38,10 @@ func LoadConfig(path string) (*conf, error) {
 
 	if cfg.AppName == "" {
 		cfg.AppName = "EstudoGo"
+	}
+
+	if cfg.AppEnv == "" {
+		cfg.AppEnv = "production"
 	}
 
 	Conf = cfg

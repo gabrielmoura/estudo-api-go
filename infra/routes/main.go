@@ -30,31 +30,33 @@ func HandleRequest(addr string) {
 	auth.Use(middleware.JwtAuthMiddleware())
 
 	/** Rotas de Usuário **/
-	auth.GET("/user", getAllUser)
-	auth.GET("/user/:id", getOneUser)
-	auth.PUT("/user/:id", updateUser)
-	auth.POST("/user", postUser)
-	auth.DELETE("/user", deleteUser)
+	user := auth.Group("/user")
+	user.GET("/", getAllUser)
+	user.GET("/:id", getOneUser)
+	user.PUT("/:id", updateUser)
+	user.POST("/", postUser)
+	user.DELETE("/", deleteUser)
 
-	/** Rotas de Pessoa **/
-	auth.GET("/person", getAllPerson)
-	auth.GET("/person/:id", getOnePerson)
+	///** Rotas de Pessoa **/
+	//auth.GET("/person", getAllPerson)
+	//auth.GET("/person/:id", getOnePerson)
 
 	/** Rotas de Produtos **/
-	auth.GET("/product", getAllProduct)
-	auth.GET("/product/:id", getOneProduct)
-	auth.PUT("/product/:id", updateProduct)
-	auth.POST("/product", postProduct)
-	auth.DELETE("/product", deleteProduct)
+	product := auth.Group("/product")
+	product.GET("/", getAllProduct)
+	product.GET("/:id", getOneProduct)
+	product.PUT("/:id", updateProduct)
+	product.POST("/", postProduct)
+	product.DELETE("/", deleteProduct)
 
 	/** Rotas de Carrinho **/
-	auth.GET("/cart", getAllCart)
-	auth.GET("/cart/:id", getOneCart)
-	auth.PUT("/cart/:id", updateCart)
-	auth.POST("/cart", postCart)
-	auth.DELETE("/cart", deleteCart)
+	cart := auth.Group("/cart")
+	cart.GET("/", getAllCart)
+	cart.GET("/:id", getOneCart)
+	cart.PUT("/:id", updateCart)
+	cart.POST("/", postCart)
+	cart.DELETE("/", deleteCart)
 
 	r.GET("/doc/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	log.Fatal(r.Run(addr))
 }

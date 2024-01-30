@@ -26,7 +26,7 @@ func NewProduct(name string, price float64) (*Product, error) {
 		ID:        uuid.New().String(),
 		Name:      name,
 		Price:     price,
-		CreatedAt: time.Now().UTC(),
+		CreatedAt: time.Now(),
 	}
 	err := newP.Validate()
 	if err != nil {

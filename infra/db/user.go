@@ -2,12 +2,14 @@ package db
 
 import (
 	"database/sql"
+	"github.com/gabrielmoura/estudo-api-go/internal/util"
+	"time"
 
 	"github.com/gabrielmoura/estudo-api-go/internal/entity"
 )
 
 func GetAllUser(db *sql.DB) ([]*entity.User, error) {
-	rows, err := db.Query("SELECT id,name,email,password FROM user")
+	rows, err := db.Query("SELECT id,name,email,password,created_at FROM user")
 	if err != nil {
 		return nil, err
 	}
@@ -16,10 +18,14 @@ func GetAllUser(db *sql.DB) ([]*entity.User, error) {
 
 	for rows.Next() {
 		var p entity.User
-		err = rows.Scan(&p.ID, &p.Name, &p.Email, &p.Password)
-		if err != nil {
+		var createdAtString string
+		if err := rows.Scan(&p.ID, &p.Name, &p.Email, &p.Password, &createdAtString); err != nil {
 			return nil, err
 		}
+		if p.CreatedAt, err = util.ConvertStringToTime(createdAtString); err != nil {
+			return nil, err
+		}
+
 		users = append(users, &p)
 	}
 
@@ -27,23 +33,31 @@ func GetAllUser(db *sql.DB) ([]*entity.User, error) {
 }
 
 func GetOneUser(db *sql.DB, id string) (*entity.User, error) {
-	stmp, err := db.Prepare("SELECT id,name,email,password FROM user WHERE id=?")
+	stmp, err := db.Prepare("SELECT id,name,email,password,created_at FROM user WHERE id=?")
 	if err != nil {
 		return nil, err
 	}
 	var p entity.User
-	stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Email, &p.Password)
+	var createdAtString string
+	stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Email, &p.Password, &createdAtString)
+	if p.CreatedAt, err = util.ConvertStringToTime(createdAtString); err != nil {
+		return nil, err
+	}
 	defer stmp.Close()
 	return &p, nil
 }
 
 func GetOneUserByEmail(db *sql.DB, email string) (*entity.User, error) {
-	stmp, err := db.Prepare("SELECT id,name,email,password FROM user WHERE email=?")
+	stmp, err := db.Prepare("SELECT id,name,email,password,created_at FROM user WHERE email=?")
 	if err != nil {
 		return nil, err
 	}
 	var p entity.User
-	stmp.QueryRow(email).Scan(&p.ID, &p.Name, &p.Email, &p.Password)
+	var createdAtString string
+	stmp.QueryRow(email).Scan(&p.ID, &p.Name, &p.Email, &p.Password, &createdAtString)
+	if p.CreatedAt, err = util.ConvertStringToTime(createdAtString); err != nil {
+		return nil, err
+	}
 	defer stmp.Close()
 	return &p, nil
 }
@@ -60,7 +74,10 @@ func InsertUser(db *sql.DB, u *entity.User) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	stmp.Exec(u.ID, u.Name, u.Email, u.Password, u.CreatedAt)
+
+	if _, err := stmp.Exec(u.ID, u.Name, u.Email, u.Password, u.CreatedAt.Format(time.RFC3339)); err != nil {
+		return false, err
+	}
 
 	defer stmp.Close()
 

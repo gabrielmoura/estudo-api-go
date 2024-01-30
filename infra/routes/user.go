@@ -90,7 +90,7 @@ func postUser(c *gin.Context) {
 			"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusCreated, user)
 }
 
 // deleteUser godoc
@@ -136,14 +136,12 @@ func updateUser(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Requisição Inválida", Stack: err.Error()})
 		return
 	}
 
 	if err := db.UpdateUser(db.Con, user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error()})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Erro ao atualizar", Stack: err.Error()})
 		return
 	}
 

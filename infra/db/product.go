@@ -2,6 +2,8 @@ package db
 
 import (
 	"database/sql"
+	"github.com/gabrielmoura/estudo-api-go/internal/util"
+	"time"
 
 	"github.com/gabrielmoura/estudo-api-go/internal/entity"
 )
@@ -16,10 +18,15 @@ func GetAllProduct(db *sql.DB) ([]*entity.Product, error) {
 
 	for rows.Next() {
 		var p entity.Product
-		err = rows.Scan(&p.ID, &p.Name, &p.Price)
-		if err != nil {
+		var createdAtString string
+		if err = rows.Scan(&p.ID, &p.Name, &p.Price, &createdAtString); err != nil {
 			return nil, err
 		}
+
+		if p.CreatedAt, err = util.ConvertStringToTime(createdAtString); err != nil {
+			return nil, err
+		}
+
 		products = append(products, &p)
 	}
 
@@ -32,7 +39,15 @@ func GetOneProduct(db *sql.DB, id string) (*entity.Product, error) {
 		return nil, err
 	}
 	var p entity.Product
-	stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Price)
+	var createdAtString string
+
+	if err := stmp.QueryRow(id).Scan(&p.ID, &p.Name, &p.Price, &createdAtString); err != nil {
+		return nil, err
+	}
+	if p.CreatedAt, err = util.ConvertStringToTime(createdAtString); err != nil {
+		return nil, err
+	}
+
 	defer stmp.Close()
 	return &p, nil
 }
@@ -42,7 +57,7 @@ func InsertProduct(db *sql.DB, p *entity.Product) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	stmp.Exec(p.ID, p.Name, p.Price, p.CreatedAt)
+	stmp.Exec(p.ID, p.Name, p.Price, p.CreatedAt.Format(time.RFC3339))
 
 	defer stmp.Close()
 

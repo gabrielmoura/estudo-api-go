@@ -8,27 +8,16 @@ import (
 	"testing"
 
 	"github.com/gabrielmoura/estudo-api-go/infra/db"
-	"github.com/gabrielmoura/estudo-api-go/internal/entity"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 )
 
-func SetupRoutes() *gin.Engine {
-	routes := gin.Default()
-	return routes
-}
-func UserMock() {
-	user, _ := entity.NewUser("Test", "test@example.com", "123456")
-	db.InsertUser(db.Con, user)
-}
-
-func TestStatusAllUser(t *testing.T) {
+func TestStatusAllProducts(t *testing.T) {
 	db.Conn("sqlite", "../../cmd/server/sqlite.db")
 	// UserMock()
 
-	rName := "/user"
+	rName := "/product"
 	r := SetupRoutes()
-	r.GET(rName, getAllUser)
+	r.GET(rName, getAllProduct)
 
 	req, _ := http.NewRequest("GET", rName, nil)
 	res := httptest.NewRecorder()
@@ -42,13 +31,13 @@ func TestStatusAllUser(t *testing.T) {
 	// }
 }
 
-func TestStatusOneUser(t *testing.T) {
+func TestStatusOneProduct(t *testing.T) {
 	db.Conn("sqlite", "../../cmd/server/sqlite.db")
 	// UserMock()
 
-	rName := "/user/1c9dcef3-98f7-4ec8-8a04-2ae953282615"
+	rName := "/product/d1a58243-5c20-4296-b315-3677f0d2b0c1"
 	r := SetupRoutes()
-	r.GET("/user/:id", getOneUser)
+	r.GET("/product/:id", getOneProduct)
 
 	req, _ := http.NewRequest("GET", rName, nil)
 	res := httptest.NewRecorder()
@@ -62,16 +51,16 @@ func TestStatusOneUser(t *testing.T) {
 	// }
 }
 
-func TestUpdateOneUser(t *testing.T) {
+func TestUpdateOneProduct(t *testing.T) {
 	db.Conn("sqlite", "../../cmd/server/sqlite.db")
 	// UserMock()
 
-	rName := "/user/1c9dcef3-98f7-4ec8-8a04-2ae953282615"
+	rName := "/product/d1a58243-5c20-4296-b315-3677f0d2b0c1"
 	r := SetupRoutes()
-	r.PUT("/user/:id", updateUser)
+	r.PUT("/product/:id", updateProduct)
 
 	userData := map[string]interface{}{
-		"name": "Testando",
+		"name": "Abacaxi",
 	}
 	jsonData, err := json.Marshal(userData)
 	if err != nil {
@@ -86,18 +75,17 @@ func TestUpdateOneUser(t *testing.T) {
 	assert.Equal(t, http.StatusOK, res.Code)
 }
 
-func TestCreateOneUser(t *testing.T) {
+func TestCreateOneProduct(t *testing.T) {
 	db.Conn("sqlite", "../../cmd/server/sqlite.db")
 	// UserMock()
 
-	rName := "/user"
+	rName := "/product"
 	r := SetupRoutes()
-	r.POST("/user", postUser)
+	r.POST("/product", postProduct)
 
 	userData := map[string]interface{}{
-		"name":     "Testando",
-		"email":    "test1@example.com",
-		"password": "123456",
+		"name":  "Abacate",
+		"price": 1.99,
 	}
 	jsonData, err := json.Marshal(userData)
 	if err != nil {
@@ -112,13 +100,13 @@ func TestCreateOneUser(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, res.Code)
 }
 
-func TestDeleteOneUser(t *testing.T) {
+func TestDeleteOneProduct(t *testing.T) {
 	db.Conn("sqlite", "../../cmd/server/sqlite.db")
 	// UserMock()
 
-	rName := "/user/1c9dcef3-98f7-4ec8-8a04-2ae953282615"
+	rName := "/product/d1a58243-5c20-4296-b315-3677f0d2b0c1"
 	r := SetupRoutes()
-	r.DELETE("/user/:id", deleteUser)
+	r.DELETE("/product/:id", deleteProduct)
 
 	req, _ := http.NewRequest("DELETE", rName, nil)
 	res := httptest.NewRecorder()

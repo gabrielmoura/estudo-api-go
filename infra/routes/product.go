@@ -107,7 +107,7 @@ func postProduct(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "Erro ao inserir produto", Stack: err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, product)
+	c.JSON(http.StatusCreated, product)
 }
 
 // deleteProduct godoc

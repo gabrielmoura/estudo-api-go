@@ -14,8 +14,12 @@ FROM build as production
 COPY --from=build /usr/local/bin/app .
 
 ENV WEB_SERVER_PORT=8001
-ENV DB_DRIVER=sqlite
+ENV DB_DRIVER="sqlite"
 ENV DB_NAME="./sqlite.db"
+
+ENV JWT_SECRET="secret"
+ENV JWT_EXPIRESIN=3600
+
 EXPOSE $WEB_SERVER_PORT
 
 CMD ["app"]

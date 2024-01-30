@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func CreateToken(id string, permission []string) (string, *jwt.MapClaims, error) {
+func CreateToken(id string, permission []string, ip string) (string, *jwt.MapClaims, error) {
 	expiresIn := time.Second * time.Duration(configs.Conf.JwtExperesIn)
 
 	// Criar as claims
@@ -19,6 +19,11 @@ func CreateToken(id string, permission []string) (string, *jwt.MapClaims, error)
 		"exp": time.Now().Add(expiresIn).Unix(),
 		"iat": time.Now().Unix(),
 		"p":   strings.Join(permission, ","),
+		//"ip":  ip,
+	}
+	// Verificar se o IP não está vazio
+	if ip != "" {
+		claims["ip"] = ip
 	}
 
 	// Criar e assinar o token

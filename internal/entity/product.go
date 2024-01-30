@@ -1,42 +1,32 @@
 package entity
 
 import (
-	"errors"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
+	"gopkg.in/validator.v2"
 )
 
 type Product struct {
 	ID        string    `json:"id"`
-	Name      string    `json:"name"`
+	Name      string    `json:"name" validate:"min=3"`
 	Price     float64   `json:"price"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-var (
-	ErrIdIsRequired    = errors.New("id is required")
-	ErrNameIsRequired  = errors.New("name is required")
-	ErrPriceIsRequired = errors.New("price is required")
-)
-
-func (p *Product) Validate() error {
-	if p.ID == "" {
-		return ErrIdIsRequired
-	}
-	if p.Name == "" {
-		return ErrNameIsRequired
-	}
-	if p.Price == 0 {
-		return ErrPriceIsRequired
+func (p Product) Validate() error {
+	if err := validator.Validate(p); err != nil {
+		return err
 	}
 	return nil
 }
+
 func NewProduct(name string, price float64) (*Product, error) {
 	newP := &Product{
 		ID:        uuid.New().String(),
 		Name:      name,
 		Price:     price,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
 	}
 	err := newP.Validate()
 	if err != nil {

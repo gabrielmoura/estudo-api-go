@@ -1,0 +1,472 @@
+definitions:
+  dto.ErrorResponse:
+    properties:
+      error:
+        type: string
+      stack:
+        type: string
+    type: object
+  dto.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  dto.LoginResponse:
+    properties:
+      claims: {}
+      token:
+        type: string
+    type: object
+  dto.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.ProductRequest:
+    properties:
+      name:
+        minLength: 3
+        type: string
+      price:
+        type: number
+    required:
+    - name
+    - price
+    type: object
+  entity.Cart:
+    properties:
+      id:
+        type: string
+      product:
+        items:
+          $ref: '#/definitions/entity.Product'
+        type: array
+    type: object
+  entity.Product:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      price:
+        type: number
+    type: object
+  entity.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        minLength: 3
+        type: string
+      password:
+        type: string
+    type: object
+externalDocs:
+  description: GitHub Repository
+  url: https://github.com/gabrielmoura/estudo-api-go
+host: localhost:8001
+info:
+  contact: {}
+  description: API de estudo em Go
+  title: Estudo API Go
+  version: "1.0"
+paths:
+  /cart:
+    get:
+      consumes:
+      - application/json
+      description: Get all carts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Cart'
+            type: array
+      summary: Get all carts
+      tags:
+      - carts
+    post:
+      consumes:
+      - application/json
+      description: Create a new cart
+      parameters:
+      - description: Cart
+        in: body
+        name: cart
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Cart'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Cart'
+      summary: Create a new cart
+      tags:
+      - carts
+  /cart/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a cart
+      parameters:
+      - description: Cart ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: Delete a cart
+      tags:
+      - carts
+    get:
+      consumes:
+      - application/json
+      description: Get one cart
+      parameters:
+      - description: Cart ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Cart'
+      summary: Get one cart
+      tags:
+      - carts
+    put:
+      consumes:
+      - application/json
+      description: Update a cart
+      parameters:
+      - description: Cart ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Cart
+        in: body
+        name: cart
+        required: true
+        schema:
+          $ref: '#/definitions/entity.Cart'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Cart'
+      summary: Update a cart
+      tags:
+      - carts
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Faz login na aplicação
+      parameters:
+      - description: Login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Login
+      tags:
+      - login
+  /product:
+    get:
+      consumes:
+      - application/json
+      description: Get all Products
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all Products
+      tags:
+      - product
+    post:
+      consumes:
+      - application/json
+      description: Create a new Product
+      parameters:
+      - description: Product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new Product
+      tags:
+      - product
+  /product/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a Product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a Product
+      tags:
+      - product
+    get:
+      consumes:
+      - application/json
+      description: Get one Product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Get one Product
+      tags:
+      - product
+    put:
+      consumes:
+      - application/json
+      description: Update a Product
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Product
+        in: body
+        name: product
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Product'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a Product
+      tags:
+      - product
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Registra um novo usuário
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.MessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Registra um novo usuário
+      tags:
+      - login
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: Get all Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all Users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      description: Create User
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Create User
+      tags:
+      - user
+  /user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User
+      tags:
+      - user
+    get:
+      consumes:
+      - application/json
+      description: Get one User
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Get one User
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update User
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Update User
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

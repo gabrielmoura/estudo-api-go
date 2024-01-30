@@ -49,6 +49,13 @@ func GetOneUserByEmail(db *sql.DB, email string) (*entity.User, error) {
 }
 
 func InsertUser(db *sql.DB, u *entity.User) (bool, error) {
+	// Check if user already exists
+	_, err := GetOneUserByEmail(db, u.Email)
+	if err == nil {
+		return false, err
+	}
+
+	// Insert user
 	stmp, err := db.Prepare("INSERT INTO user(id,name,email,password,created_at) VALUES(?,?,?,?,?)")
 	if err != nil {
 		return false, err

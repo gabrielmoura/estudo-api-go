@@ -14,7 +14,7 @@ func InitLogger() {
 	if configs.Conf.AppEnv == "development" {
 		config = zap.NewDevelopmentConfig()
 	}
-	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	config.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	Logger, _ = config.Build()
 	defer Logger.Sync()
 }
